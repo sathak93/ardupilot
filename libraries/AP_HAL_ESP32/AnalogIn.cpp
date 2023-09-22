@@ -153,7 +153,7 @@ float AnalogSource::read_latest()
    */
 float AnalogSource::voltage_average()
 {
-    return _scaler * read_average();
+    return 0.000805 * read_average();
 }
 
 /*
@@ -161,12 +161,12 @@ float AnalogSource::voltage_average()
    */
 float AnalogSource::voltage_latest()
 {
-    return _scaler * read_latest();
+    return 0.000805  * read_latest();
 }
 
 float AnalogSource::voltage_average_ratiometric()
 {
-    return _scaler * read_latest();
+    return 0.000805  * read_latest();
 }
 
 // ardupin

@@ -25,6 +25,7 @@
 #include "DeviceBus.h"
 
 #include "driver/spi_master.h"
+#include "driver/spi_common_internal.h"
 #include "driver/spi_common.h"
 #include "driver/gpio.h"
 

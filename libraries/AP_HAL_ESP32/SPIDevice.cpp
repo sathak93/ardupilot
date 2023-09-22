@@ -44,9 +44,13 @@ SPIBus::SPIBus(uint8_t _bus):
         .miso_io_num = bus_desc[_bus].miso,
         .sclk_io_num = bus_desc[_bus].sclk,
         .quadwp_io_num = -1,
-        .quadhd_io_num = -1
+        .quadhd_io_num = -1,
+        .intr_flags = ESP_INTR_FLAG_LOWMED
     };
+    printf("spi host == %d\n", bus_desc[_bus].host);
+    if(spi_bus_get_attr(bus_desc[_bus].host) == NULL) {
     spi_bus_initialize(bus_desc[_bus].host, &config, bus_desc[_bus].dma_ch);
+    }
 }
 
 SPIDevice::SPIDevice(SPIBus &_bus, SPIDeviceDesc &_device_desc)
