@@ -42,56 +42,58 @@
 #define HAL_INS_PROBE_LIST PROBE_IMU_SPI( Invensense, HAL_INS_MPU9250_NAME, ROTATION_NONE)
 
 // -----BARO-----
-#define HAL_BARO_DEFAULT HAL_BARO_BMP280_SPI
 #define HAL_BARO_BMP280_NAME "BMP280"
-#define HAL_BARO_PROBE_LIST PROBE_BARO_SPI(BMP280, "bmp280")
+#define HAL_BARO_DEFAULT 				HAL_BARO_BMP280_I2C
+#define HAL_BARO_PROBE_LIST 				PROBE_BARO_I2C(BMP280, 0, 0x76)
+
 // allow boot without a baro
-#define HAL_BARO_ALLOW_INIT_NO_BARO 1
+//#define HAL_BARO_ALLOW_INIT_NO_BARO 1
 
 //-----ADC-----
 #define HAL_USE_ADC TRUE
-
-// 	pin number,
-//	gain/multiplier,
-//	the ardupilot name for the pin in parameter/s.
+#define AP_BATTERY_ANALOG_ENABLED TRUE
+# define AP_BATT_VOLTDIVIDER_DEFAULT       HAL_BATT_VOLT_SCALE
+# define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  HAL_BATT_CURR_SCALE
+#define HAL_BATT_VOLT_PIN (35)  // adc1_7 gpio35
+#define HAL_BATT_VOLT_SCALE (3.0)
+#define HAL_BATT_CURR_PIN (34)  // adc1_7 gpio3
+#define HAL_BATT_CURR_SCALE (1)
 #define HAL_ESP32_ADC_PINS {\
-	{ADC1_GPIO35_CHANNEL, 11, 34},\
-	{ADC1_GPIO34_CHANNEL, 11, 35},\
+	{ADC1_GPIO35_CHANNEL, 11, 35},\
+	{ADC1_GPIO34_CHANNEL, 11, 34},\
 	{ADC1_GPIO39_CHANNEL, 11, 39},\
 	{ADC1_GPIO36_CHANNEL, 11, 36}\
 }
 
-//-----COMPASS-----
-#define HAL_MAG_PROBE_LIST PROBE_MAG_IMU(AK8963, mpu9250, 0, ROTATION_NONE)
-#define HAL_PROBE_EXTERNAL_I2C_COMPASSES 1
-#define ALLOW_ARM_NO_COMPASS				1
-#define AP_COMPASS_AK8963_ENABLED TRUE
-//-----WIFI-----
 
-#define HAL_ESP32_WIFI 1  // 2 use udp, 1 use tcp
-#define WIFI_SSID "ardupilot123"
-#define WIFI_PWD "ardupilot123"
+//-----COMPASS-----
+#define AP_COMPASS_QMC5883L_ENABLED   TRUE
+#define HAL_MAG_PROBE_LIST 				PROBE_MAG_I2C(QMC5883L, 0, 0x0d, true ,  ROTATION_NONE)
+#define HAL_PROBE_EXTERNAL_I2C_COMPASSES 1
+
+
+//-----WIFI-----
+#define HAL_ESP32_WIFI 1
+#define WIFI_STATION 1    // 0-AP, 1-STA
+#define WIFI_HOSTNAME "FCU"
+#define WIFI_SSID "ap-esp32"     // SSID for AP mode
+#define WIFI_SSID_STATION "REDMI_S"        // SSID for STA mode
+#define WIFI_PWD "2017214007"
+#define WIFI_CHANNEL 7
 
 //-----RCOUT-----
-#define HAL_ESP32_RCOUT { \
-	GPIO_NUM_21, \
-	GPIO_NUM_22, \
-	GPIO_NUM_27, \
-	GPIO_NUM_25, \
-	GPIO_NUM_32, \
-	GPIO_NUM_33 }
+#define HAL_ESP32_RCOUT { GPIO_NUM_25,GPIO_NUM_27, GPIO_NUM_33, GPIO_NUM_32 }
 
 //-----SPIBUS-----
-#define HAL_ESP32_SPI_BUSES \
-    {.host=VSPI_HOST, .dma_ch=1, .mosi=GPIO_NUM_23, .miso=GPIO_NUM_19, .sclk=GPIO_NUM_18}
-
+#define HAL_ESP32_SPI_BUSES {.host=VSPI_HOST, .dma_ch=2, .mosi=GPIO_NUM_23, .miso=GPIO_NUM_19, .sclk=GPIO_NUM_18}
+//#define HAL_ESP32_SPI_BUSES {.host=HSPI_HOST, .dma_ch=2, .mosi=GPIO_NUM_13, .miso=GPIO_NUM_12, .sclk=GPIO_NUM_14}
 //-----SPIDEVICES-----
 #define HAL_ESP32_SPI_DEVICES \
     {.name="mpu9250", .bus=0, .device=1, .cs=GPIO_NUM_5,  .mode = 0, .lspeed=2*MHZ, .hspeed=8*MHZ}
 
 //-----I2CBUS-----
 #define HAL_ESP32_I2C_BUSES \
-	{.port=I2C_NUM_0, .sda=GPIO_NUM_13, .scl=GPIO_NUM_12, .speed=400*KHZ, .internal=true}
+	{.port=I2C_NUM_0, .sda=GPIO_NUM_21, .scl=GPIO_NUM_22, .speed=400000, .internal=true, .soft = false}
 
 //-----RCIN-----
 #define HAL_ESP32_RCIN GPIO_NUM_4
@@ -103,18 +105,23 @@
   ,{.port=UART_NUM_1, .rx=GPIO_NUM_16, .tx=GPIO_NUM_17 }
 
 //FILESYSTEM SUPPORT
-#define HAVE_FILESYSTEM_SUPPORT 1
-#define HAL_OS_POSIX_IO 1
+//#define HAVE_FILESYSTEM_SUPPORT 1
+//#define HAL_OS_POSIX_IO 1
 #define HAL_BOARD_STORAGE_DIRECTORY "/SDCARD/APM/STORAGE"
-#define HAL_ESP32_SDMMC 1
-#define HAL_ESP32_SDCARD 1
+//#define HAL_ESP32_SDMMC 1
+//#define HAL_ESP32_SDCARD 1
+//#define HAL_ESP32_SDSPI {.host=HSPI_HOST, .dma_ch=1, .mosi=GPIO_NUM_13, .miso=GPIO_NUM_12, .sclk=GPIO_NUM_14, .cs=GPIO_NUM_15}
+//#define HAL_ESP32_SDSPI {.host=VSPI_HOST, .dma_ch=1, .mosi=GPIO_NUM_23, .miso=GPIO_NUM_19, .sclk=GPIO_NUM_18, .cs=GPIO_NUM_5}
+
+
 
 //LOGGING
 #define HAL_BOARD_LOG_DIRECTORY "/SDCARD/APM/LOGS"
-#define LOGGER_MAVLINK_SUPPORT 1
-#define HAL_LOGGING_BACKENDS_DEFAULT 1
+#define LOGGER_MAVLINK_SUPPORT 0
+#define HAL_LOGGING_BACKENDS_DEFAULT 0
 #define HAL_LOGGING_DATAFLASH_ENABLED			0
 #define HAL_LOGGING_MAVLINK_ENABLED			0
+#define HAL_LOGGING_FILESYSTEM_ENABLED 0
 //TERRAIN
 #define HAL_BOARD_TERRAIN_DIRECTORY "/SDCARD/APM/TERRAIN"
 
@@ -122,3 +129,13 @@
 #ifndef ENABLE_HEAP
 #define ENABLE_HEAP 1
 #endif
+
+//If its will be set to 0, code will not compile! Throwing Lua related error
+//#define AP_FILESYSTEM_ESP32_ENABLED 1
+
+#define AC_PRECLAND_ENABLED FALSE
+#define AP_BEACON_ENABLED FALSE
+#define RANGEFINDER_ENABLED FALSE
+#define HAL_PROXIMITY_ENABLED FALSE
+#define MODE_SMARTRTL_ENABLED FALSE
+#define AP_SERVORELAYEVENTS_ENABLED FALSE

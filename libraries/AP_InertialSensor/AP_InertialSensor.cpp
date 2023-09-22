@@ -1910,7 +1910,7 @@ check_sample:
         uint32_t wait_counter = 0;
         // allow to wait for up to 1/3 of the loop time for samples from all
         // IMUs to come in
-        const uint8_t wait_per_loop = 100;
+        const uint8_t wait_per_loop = 90;
         const uint8_t wait_counter_limit = uint32_t(_loop_delta_t * 1.0e6) / (3*wait_per_loop);
 
         while (true) {

@@ -68,50 +68,50 @@ void Scheduler::init()
     hal.console->printf("%s:%d running with CONFIG_FREERTOS_HZ=%d\n", __PRETTY_FUNCTION__, __LINE__,CONFIG_FREERTOS_HZ);
 
     // pin main thread to Core 0, and we'll also pin other heavy-tasks to core 1, like wifi-related.
-    if (xTaskCreatePinnedToCore(_main_thread, "APM_MAIN", Scheduler::MAIN_SS, this, Scheduler::MAIN_PRIO, &_main_task_handle,1) != pdPASS) {
+    if (xTaskCreatePinnedToCore(_main_thread, "APM_MAIN", Scheduler::MAIN_SS, this, Scheduler::MAIN_PRIO, &_main_task_handle,0) != pdPASS) {
     //if (xTaskCreate(_main_thread, "APM_MAIN", Scheduler::MAIN_SS, this, Scheduler::MAIN_PRIO, &_main_task_handle) != pdPASS) {
         hal.console->printf("FAILED to create task _main_thread\n");
     } else {
     	hal.console->printf("OK created task _main_thread\n");
     }
 
-    if (xTaskCreate(_timer_thread, "APM_TIMER", TIMER_SS, this, TIMER_PRIO, &_timer_task_handle) != pdPASS) {
+    if (xTaskCreatePinnedToCore(_timer_thread, "APM_TIMER", TIMER_SS, this, TIMER_PRIO, &_timer_task_handle,0) != pdPASS) {
         hal.console->printf("FAILED to create task _timer_thread\n");
     } else {
     	hal.console->printf("OK created task _timer_thread\n");
     }	
 
-    if (xTaskCreatePinnedToCore(_rcout_thread, "APM_RCOUT", RCOUT_SS, this, RCOUT_PRIO, &_rcout_task_handle,0) != pdPASS) {
+     if (xTaskCreatePinnedToCore(_rcout_thread, "APM_RCOUT", RCOUT_SS, this, RCOUT_PRIO, &_rcout_task_handle,1) != pdPASS) {
        hal.console->printf("FAILED to create task _rcout_thread\n");
     } else {
        hal.console->printf("OK created task _rcout_thread\n");
     }
 
-    if (xTaskCreatePinnedToCore(_rcin_thread, "APM_RCIN", RCIN_SS, this, RCIN_PRIO, &_rcin_task_handle,0) != pdPASS) {
+    if (xTaskCreatePinnedToCore(_rcin_thread, "APM_RCIN", RCIN_SS, this, RCIN_PRIO, &_rcin_task_handle,1) != pdPASS) {
        hal.console->printf("FAILED to create task _rcin_thread\n");
     } else {
        hal.console->printf("OK created task _rcin_thread\n");
     }
 
     // pin this thread to Core 1
-    if (xTaskCreatePinnedToCore(_uart_thread, "APM_UART", UART_SS, this, UART_PRIO, &_uart_task_handle,0) != pdPASS) {
+    if (xTaskCreatePinnedToCore(_uart_thread, "APM_UART", UART_SS, this, UART_PRIO, &_uart_task_handle,1) != pdPASS) {
         hal.console->printf("FAILED to create task _uart_thread\n");
     } else {
-    	hal.console->printf("OK created task _uart_thread\n");
+    	hal.console->printf("OK created task _uart_thread\n"); 
     }	  
 
-    if (xTaskCreate(_io_thread, "SchedulerIO:APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle) != pdPASS) {
+    if (xTaskCreatePinnedToCore(_io_thread, "SchedulerIO:APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle, 1) != pdPASS) {
         hal.console->printf("FAILED to create task _io_thread\n");
     } else {
         hal.console->printf("OK created task _io_thread\n");
     }	 
 
-    if (xTaskCreate(_storage_thread, "APM_STORAGE", STORAGE_SS, this, STORAGE_PRIO, &_storage_task_handle) != pdPASS) { //no actual flash writes without this, storage kinda appears to work, but does an erase on every boot and params don't persist over reset etc.
+    if (xTaskCreatePinnedToCore(_storage_thread, "APM_STORAGE", STORAGE_SS, this, STORAGE_PRIO, &_storage_task_handle, 1) != pdPASS) { //no actual flash writes without this, storage kinda appears to work, but does an erase on every boot and params don't persist over reset etc.
         hal.console->printf("FAILED to create task _storage_thread\n");
     } else {
     	hal.console->printf("OK created task _storage_thread\n");
     }
-
+ 
     //   xTaskCreate(_print_profile, "APM_PROFILE", IO_SS, this, IO_PRIO, nullptr);
 
     //disableCore0WDT();
@@ -292,9 +292,13 @@ void Scheduler::_timer_thread(void *arg)
     printf("%s:%d start\n", __PRETTY_FUNCTION__, __LINE__);
 #endif
     Scheduler *sched = (Scheduler *)arg;
+ 
+#if HAL_INS_DEFAULT != HAL_INS_NONE
+    // wait to ensure INS system inits unless using HAL_INS_NONE
     while (!_initialized) {
         sched->delay_microseconds(1000);
     }
+#endif
 #ifdef SCHEDDEBUG
     printf("%s:%d initialised\n", __PRETTY_FUNCTION__, __LINE__);
 #endif
@@ -513,11 +517,6 @@ void IRAM_ATTR Scheduler::_main_thread(void *arg)
     printf("%s:%d start\n", __PRETTY_FUNCTION__, __LINE__);
 #endif
     Scheduler *sched = (Scheduler *)arg;
-    hal.serial(0)->begin(115200);
-    hal.serial(1)->begin(57600);
-    hal.serial(2)->begin(57600);
-    //hal.uartC->begin(921600);
-    hal.serial(3)->begin(115200);
 
 #ifndef HAL_DISABLE_ADC_DRIVER
     hal.analogin->init();
@@ -533,7 +532,7 @@ void IRAM_ATTR Scheduler::_main_thread(void *arg)
 #endif
     while (true) {
         sched->callbacks->loop();
-        sched->delay_microseconds(250);
+        sched->delay_microseconds(1000);
 
         sched->print_stats(); // only runs every 60 seconds.
     }
