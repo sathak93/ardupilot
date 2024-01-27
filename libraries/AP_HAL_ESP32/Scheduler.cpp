@@ -81,7 +81,11 @@ void Scheduler::init()
     	hal.console->printf("OK created task _timer_thread\n");
     }	
 
+<<<<<<< Updated upstream
      if (xTaskCreatePinnedToCore(_rcout_thread, "APM_RCOUT", RCOUT_SS, this, RCOUT_PRIO, &_rcout_task_handle,1) != pdPASS) {
+=======
+    if (xTaskCreatePinnedToCore(_rcout_thread, "APM_RCOUT", RCOUT_SS, this, RCOUT_PRIO, &_rcout_task_handle,1) != pdPASS) {
+>>>>>>> Stashed changes
        hal.console->printf("FAILED to create task _rcout_thread\n");
     } else {
        hal.console->printf("OK created task _rcout_thread\n");
@@ -100,13 +104,21 @@ void Scheduler::init()
     	hal.console->printf("OK created task _uart_thread\n"); 
     }	  
 
+<<<<<<< Updated upstream
     if (xTaskCreatePinnedToCore(_io_thread, "SchedulerIO:APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle, 1) != pdPASS) {
+=======
+    if (xTaskCreatePinnedToCore(_io_thread, "SchedulerIO:APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle,1) != pdPASS) {
+>>>>>>> Stashed changes
         hal.console->printf("FAILED to create task _io_thread\n");
     } else {
         hal.console->printf("OK created task _io_thread\n");
     }	 
 
+<<<<<<< Updated upstream
     if (xTaskCreatePinnedToCore(_storage_thread, "APM_STORAGE", STORAGE_SS, this, STORAGE_PRIO, &_storage_task_handle, 1) != pdPASS) { //no actual flash writes without this, storage kinda appears to work, but does an erase on every boot and params don't persist over reset etc.
+=======
+    if (xTaskCreatePinnedToCore(_storage_thread, "APM_STORAGE", STORAGE_SS, this, STORAGE_PRIO, &_storage_task_handle,1) != pdPASS) { //no actual flash writes without this, storage kinda appears to work, but does an erase on every boot and params don't persist over reset etc.
+>>>>>>> Stashed changes
         hal.console->printf("FAILED to create task _storage_thread\n");
     } else {
     	hal.console->printf("OK created task _storage_thread\n");

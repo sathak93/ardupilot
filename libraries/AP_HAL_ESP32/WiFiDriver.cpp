@@ -51,7 +51,11 @@ void WiFiDriver::_begin(uint32_t b, uint16_t rxS, uint16_t txS)
     if (_state == NOT_INITIALIZED) {
         initialize_wifi();
 
+<<<<<<< Updated upstream
 	if (xTaskCreatePinnedToCore(_wifi_thread, "APM_WIFI1", Scheduler::WIFI_SS1, this, Scheduler::WIFI_PRIO1, &_wifi_task_handle, 1) != pdPASS) {
+=======
+	if (xTaskCreatePinnedToCore(_wifi_thread, "APM_WIFI1", Scheduler::WIFI_SS1, this, Scheduler::WIFI_PRIO1, &_wifi_task_handle, 0) != pdPASS) {
+>>>>>>> Stashed changes
            hal.console->printf("FAILED to create task _wifi_thread\n");
         } else {
            hal.console->printf("OK created task _wifi_thread\n");

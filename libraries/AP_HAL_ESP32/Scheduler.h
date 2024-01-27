@@ -69,7 +69,11 @@ public:
 
     static const int SPI_PRIORITY = 24; //      if your primary imu is spi, this should be above the i2c value, spi is better.
     static const int MAIN_PRIO    = 24; //	cpu0: we want schuler running at full tilt.
+<<<<<<< Updated upstream
     static const int I2C_PRIORITY = 13;  //      if your primary imu is i2c, this should be above the spi value, i2c is not preferred.
+=======
+    static const int I2C_PRIORITY = 14;  //      if your primary imu is i2c, this should be above the spi value, i2c is not preferred.
+>>>>>>> Stashed changes
     static const int TIMER_PRIO   = 22; //      a low priority mere might cause wifi thruput to suffer
     static const int RCIN_PRIO    = 15;
     static const int RCOUT_PRIO   = 10;

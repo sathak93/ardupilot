@@ -131,11 +131,19 @@
 #endif
 
 //If its will be set to 0, code will not compile! Throwing Lua related error
+<<<<<<< Updated upstream
 //#define AP_FILESYSTEM_ESP32_ENABLED 1
+=======
+#define AP_FILESYSTEM_ESP32_ENABLED 1
+>>>>>>> Stashed changes
 
 #define AC_PRECLAND_ENABLED FALSE
 #define AP_BEACON_ENABLED FALSE
 #define RANGEFINDER_ENABLED FALSE
 #define HAL_PROXIMITY_ENABLED FALSE
 #define MODE_SMARTRTL_ENABLED FALSE
+<<<<<<< Updated upstream
 #define AP_SERVORELAYEVENTS_ENABLED FALSE
+=======
+//#define AP_SERVORELAYEVENTS_ENABLED FALSE
+>>>>>>> Stashed changes
